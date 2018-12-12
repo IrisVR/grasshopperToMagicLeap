@@ -1,0 +1,73 @@
+{
+  "project_info": {
+    "project_number": "305301428852",
+    "firebase_url": "https://helloar-cc880.firebaseio.com",
+    "project_id": "helloar-cc880",
+    "storage_bucket": "helloar-cc880.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:305301428852:android:c34294b2a7f4edf4",
+        "android_client_info": {
+          "package_name": "com.irisVR.helloAR"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "305301428852-m015q3du75aqg4thq1ig57b9b6gfecp2.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAUjQHKQbmPKLhOusXfJnvtzYJfLKQQeZY"
+        }
+      ],
+      "services": {
+        "analytics_service": {
+          "status": 1
+        },
+        "appinvite_service": {
+          "status": 1,
+          "other_platform_oauth_client": []
+        },
+        "ads_service": {
+          "status": 2
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:305301428852:android:2a2ca07ea51d59ce",
+        "android_client_info": {
+          "package_name": "com.irisvr.test"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "305301428852-m015q3du75aqg4thq1ig57b9b6gfecp2.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAUjQHKQbmPKLhOusXfJnvtzYJfLKQQeZY"
+        }
+      ],
+      "services": {
+        "analytics_service": {
+          "status": 1
+        },
+        "appinvite_service": {
+          "status": 1,
+          "other_platform_oauth_client": []
+        },
+        "ads_service": {
+          "status": 2
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
