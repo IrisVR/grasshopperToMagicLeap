@@ -10,7 +10,12 @@ using UnityEngine.Rendering;
 
 public class GeometryInteraction : MonoBehaviour {
 
+    public GameObject rightHand;
+    public GameObject leftHand;
+
     Firebase.DependencyStatus dependencyStatus = DependencyStatus.UnavailableOther;
+    DatabaseReference mDatabaseRef;
+
     // Use this for initialization
     void Start () {
         FirebaseApp.CheckAndFixDependenciesAsync().ContinueWith(task =>
@@ -32,7 +37,9 @@ public class GeometryInteraction : MonoBehaviour {
 	
 	// Update is called once per frame
 	void Update () {
-     
+
+        //save camera position to database
+        writeNewPosition();
 
     }
 
@@ -44,7 +51,7 @@ public class GeometryInteraction : MonoBehaviour {
             app.SetEditorDatabaseUrl(app.Options.DatabaseUrl);
         
         // Get the root reference location of the database.
-        DatabaseReference reference = FirebaseDatabase.DefaultInstance.RootReference;
+        mDatabaseRef = FirebaseDatabase.DefaultInstance.RootReference;
         StartListener();
 
     }
@@ -83,7 +90,23 @@ public class GeometryInteraction : MonoBehaviour {
         string txt = args.Snapshot.Value.ToString();
         this.GetComponent<Text>().text = txt;
     }
-    
+
+
+    private void writeNewPosition()
+    {
+        string cameraJson = JsonUtility.ToJson(Camera.main.transform.position);
+        mDatabaseRef.Child("CameraPosition").SetRawJsonValueAsync(cameraJson);
+
+        Vector3 leftHandPosition = leftHand.transform.GetChild(0).gameObject.transform.position;
+        string leftJson = JsonUtility.ToJson(leftHandPosition);
+        mDatabaseRef.Child("LeftHandPosition").SetRawJsonValueAsync(leftJson);
+
+        Vector3 rightHandPosition = rightHand.transform.GetChild(0).gameObject.transform.position;
+        string rightJson = JsonUtility.ToJson(rightHandPosition);
+        mDatabaseRef.Child("RightHandPosition").SetRawJsonValueAsync(rightJson);
+    }
+
+   
 
 }
 
