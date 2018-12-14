@@ -79,68 +79,14 @@ namespace ARGrasshopperClient
         private async Task Run(IGH_DataAccess DA)
         {
 
-            var child = client.Child("CameraPosition");
-            var observable = child.AsObservable<double>();
+            var child = client.Child("User");
+            var observable = child.AsObservable<MLPoint>();
             var subscription = observable
-                .Subscribe(f => setCamera(f.Object, f.Key, DA));
+                .Subscribe(f => setPositions(f.Object, f.Key, DA));
 
-            //var child2 = client.Child("LeftHandPosition");
-            //var observable2 = child2.AsObservable<double>();
-            //var subscription2 = observable2
-            //    .Subscribe(l => setLeftHand(l.Object, l.Key, DA));
-
-            //var child3 = client.Child("RightHandPosition");
-            //var observable3 = child3.AsObservable<double>();
-            //var subscription3 = observable3
-            //    .Subscribe(r => setRightHand(r.Object, r.Key, DA));
-
-
-            //var camera = await client.Child("CameraPosition").OnceAsync<double>();
-            //var left = await client.Child("LeftHandPosition").OnceAsync<double>();
-            //var right = await client.Child("RightHandPosition").OnceAsync<double>();
-
-            //double x = 0.0;
-            //double y = 0.0;
-            //double z = 0.0;
-            //int count = 0;
-
-            //foreach (var c in camera)
-            //{
-            //    if (count == 0) x = (double)c.Object;
-            //    else if (count == 1) y = (double)c.Object;
-            //    else z = (double)c.Object;
-            //    count++;
-            //}
-
-            //Point3d cpt = new Point3d(x, y, z);
-            //count = 0;
-
-            //foreach (var c in left)
-            //{
-            //    if (count == 0) x = (double)c.Object;
-            //    else if (count == 1) y = (double)c.Object;
-            //    else z = (double)c.Object;
-            //    count++;
-            //}
-
-            //Point3d lpt = new Point3d(x, y, z);
-            //count = 0;
-
-            //foreach (var c in right)
-            //{
-            //    if (count == 0) x = (double)c.Object;
-            //    else if (count == 1) y = (double)c.Object;
-            //    else z = (double)c.Object;
-            //    count++;
-            //}
-            //Point3d rpt = new Point3d(x, y, z);
-
-            //DA.SetData(0, cpt);
-            //DA.SetData(1, lpt);
-            //DA.SetData(2, rpt);
         }
 
-        private void setCamera(double value, string coordinate, IGH_DataAccess DA)
+        private void setPositions(MLPoint value, string positionToUpdate, IGH_DataAccess DA)
         {
             //expire solution
             try
@@ -151,48 +97,25 @@ namespace ARGrasshopperClient
             catch (Exception)
             { }
 
-            if (coordinate == "x") Cpt.X = value;
-            else if (coordinate == "y") Cpt.Y = value;
-            else Cpt.Z = value;
-            
-            DA.SetData(0, Cpt);
-        }
 
-        private void setLeftHand(double value, string coordinate, IGH_DataAccess DA)
-        {
-            //expire solution
-            try
+            //switched y & z to match Rhino's axis system
+            if(positionToUpdate == "CameraPosition")
             {
-                Grasshopper.Instances.ActiveCanvas.Invoke(new MethodInvoker(delegate { ExpireSolution(true); }));
-
+               Cpt = new Point3d((double)(value.x),(double)(value.z),(double)(value.y));
             }
-            catch (Exception)
-            { }
 
-            if (coordinate == "x") Lpt.X = value;
-            else if (coordinate == "y") Lpt.Y = value;
-            else Lpt.Z = value;
-
-            DA.SetData(1, Lpt);
-        }
-
-        private void setRightHand(double value, string coordinate, IGH_DataAccess DA)
-        {
-            //expire solution
-            try
+            else if (positionToUpdate == "LeftHandPosition")
             {
-                Grasshopper.Instances.ActiveCanvas.Invoke(new MethodInvoker(delegate { ExpireSolution(true); }));
-
+                Lpt = new Point3d((double)(value.x), (double)(value.z), (double)(value.y));
             }
-            catch (Exception)
-            { }
+            else Rpt = new Point3d((double)(value.x), (double)(value.z), (double)(value.y));
 
-            if (coordinate == "x") Rpt.X = value;
-            else if (coordinate == "y") Rpt.Y = value;
-            else Rpt.Z = value;
 
-            DA.SetData(2, Rpt);
+
+            //DA.SetData(0, Cpt);
         }
+
+        
 
 
         /// <summary>

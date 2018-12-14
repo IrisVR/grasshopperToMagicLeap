@@ -133,15 +133,15 @@ public class GeometryInteraction : MonoBehaviour {
     private void writeNewPosition()
     {
         string cameraJson = JsonUtility.ToJson(Camera.main.transform.position);
-        mDatabaseRef.Child("CameraPosition").SetRawJsonValueAsync(cameraJson);
+        mDatabaseRef.Child("User/CameraPosition").SetRawJsonValueAsync(cameraJson);
 
         Vector3 leftHandPosition = leftHand.transform.GetChild(0).gameObject.transform.position;
         string leftJson = JsonUtility.ToJson(leftHandPosition);
-        mDatabaseRef.Child("LeftHandPosition").SetRawJsonValueAsync(leftJson);
+        mDatabaseRef.Child("User/LeftHandPosition").SetRawJsonValueAsync(leftJson);
 
         Vector3 rightHandPosition = rightHand.transform.GetChild(0).gameObject.transform.position;
         string rightJson = JsonUtility.ToJson(rightHandPosition);
-        mDatabaseRef.Child("RightHandPosition").SetRawJsonValueAsync(rightJson);
+        mDatabaseRef.Child("User/RightHandPosition").SetRawJsonValueAsync(rightJson);
     }
 
     private void updateModel(DataSnapshot snapshot)
