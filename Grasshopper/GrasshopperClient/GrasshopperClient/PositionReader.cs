@@ -11,13 +11,17 @@ using System.Reactive.Linq;
 using Grasshopper.Kernel.Types;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
+using System.Windows.Forms;
 
 namespace ARGrasshopperClient
 {
     public class PositionReader : GH_Component
     {
 
-        private static FirebaseClient firebase;
+        private static FirebaseClient client;
+        private Point3d Cpt = new Point3d();
+        private Point3d Lpt = new Point3d();
+        private Point3d Rpt = new Point3d();
         /// <summary>
         /// Each implementation of GH_Component must provide a public 
         /// constructor without any arguments.
@@ -57,84 +61,139 @@ namespace ARGrasshopperClient
         /// to store data in output parameters.</param>
         protected override void SolveInstance(IGH_DataAccess DA)
         {
-
+            if(client==null) client = new FirebaseClient("https://helloar-cc880.firebaseio.com/");
+            
             bool shouldRun = false;
             DA.GetData(0, ref shouldRun);
             if (shouldRun)
-            {
-                GH_Point cameraPosition = new GH_Point();
-                GH_Point leftHand = new GH_Point();
-                GH_Point rightHand = new GH_Point();
-
-
+            { 
                 Run(DA).Wait();
-
-            }
-            else
-            {
-                DA.SetData(0, new Point3d());
-                DA.SetData(1, new Point3d());
-                DA.SetData(2, new Point3d());
             }
 
-
+            DA.SetData(0, Cpt);
+            DA.SetData(1, Lpt);
+            DA.SetData(2, Rpt);
         }
 
-        private static async Task Run(IGH_DataAccess DA)
+
+        private async Task Run(IGH_DataAccess DA)
         {
-            if (firebase == null) firebase = new FirebaseClient("https://helloar-cc880.firebaseio.com/");
-            var camera = await firebase.Child("CameraPosition").OnceAsync<double>();
-            var left = await firebase.Child("LeftHandPosition").OnceAsync<double>();
-            var right = await firebase.Child("RightHandPosition").OnceAsync<double>();
 
-            double x=0.0;
-            double y = 0.0;
-            double z = 0.0;
-            int count = 0;
+            var child = client.Child("CameraPosition");
+            var observable = child.AsObservable<double>();
+            var subscription = observable
+                .Subscribe(c => setCamera(c.Object, c.Key, DA));
 
-            foreach (var c in camera)
-            {
-                if (count == 0) x = (double)c.Object;
-                else if (count ==1) y = (double)c.Object;
-                else z = (double)c.Object;
-                count++;
-            }
+            var child2 = client.Child("LeftHandPosition");
+            var observable2 = child2.AsObservable<double>();
+            var subscription2 = observable2
+                .Subscribe(l => setLeftHand(l.Object, l.Key, DA));
 
-            Point3d cpt = new Point3d(x, y, z);
-            count = 0;
+            var child3 = client.Child("RightHandPosition");
+            var observable3 = child3.AsObservable<double>();
+            var subscription3 = observable3
+                .Subscribe(r => setRightHand(r.Object, r.Key, DA));
 
-            foreach (var c in left)
-            {
-                if (count == 0) x = (double)c.Object;
-                else if (count == 1) y = (double)c.Object;
-                else z = (double)c.Object;
-                count++;
-            }
 
-            Point3d lpt = new Point3d(x, y, z);
-            count = 0;
+            //var camera = await client.Child("CameraPosition").OnceAsync<double>();
+            //var left = await client.Child("LeftHandPosition").OnceAsync<double>();
+            //var right = await client.Child("RightHandPosition").OnceAsync<double>();
 
-            foreach (var c in right)
-            {
-                if (count == 0) x = (double)c.Object;
-                else if (count == 1) y = (double)c.Object;
-                else z = (double)c.Object;
-                count++;
-            }
-            Point3d rpt = new Point3d(x, y, z);
+            //double x = 0.0;
+            //double y = 0.0;
+            //double z = 0.0;
+            //int count = 0;
 
-            DA.SetData(0, cpt);
-            DA.SetData(1, lpt);
-            DA.SetData(2, rpt);
+            //foreach (var c in camera)
+            //{
+            //    if (count == 0) x = (double)c.Object;
+            //    else if (count == 1) y = (double)c.Object;
+            //    else z = (double)c.Object;
+            //    count++;
+            //}
+
+            //Point3d cpt = new Point3d(x, y, z);
+            //count = 0;
+
+            //foreach (var c in left)
+            //{
+            //    if (count == 0) x = (double)c.Object;
+            //    else if (count == 1) y = (double)c.Object;
+            //    else z = (double)c.Object;
+            //    count++;
+            //}
+
+            //Point3d lpt = new Point3d(x, y, z);
+            //count = 0;
+
+            //foreach (var c in right)
+            //{
+            //    if (count == 0) x = (double)c.Object;
+            //    else if (count == 1) y = (double)c.Object;
+            //    else z = (double)c.Object;
+            //    count++;
+            //}
+            //Point3d rpt = new Point3d(x, y, z);
+
+            //DA.SetData(0, cpt);
+            //DA.SetData(1, lpt);
+            //DA.SetData(2, rpt);
         }
 
-        public class MLCoordinate
+        private void setCamera(double value, string coordinate, IGH_DataAccess DA)
         {
-            ///JObject pointJson = new JObject(new JProperty("x", 0), new JProperty("y", 0), new JProperty("z", 0));
-            public string Coordinate { get; set; }
+            //expire solution
+            try
+            {
+                Grasshopper.Instances.ActiveCanvas.Invoke(new MethodInvoker(delegate { ExpireSolution(true); }));
+                
+            }
+            catch (Exception)
+            { }
+
+            if (coordinate == "x") Cpt.X = value;
+            else if (coordinate == "y") Cpt.Y = value;
+            else Cpt.Z = value;
+            
+            DA.SetData(0, Cpt);
         }
 
-        
+        private void setLeftHand(double value, string coordinate, IGH_DataAccess DA)
+        {
+            //expire solution
+            try
+            {
+                Grasshopper.Instances.ActiveCanvas.Invoke(new MethodInvoker(delegate { ExpireSolution(true); }));
+
+            }
+            catch (Exception)
+            { }
+
+            if (coordinate == "x") Lpt.X = value;
+            else if (coordinate == "y") Lpt.Y = value;
+            else Lpt.Z = value;
+
+            DA.SetData(1, Lpt);
+        }
+
+        private void setRightHand(double value, string coordinate, IGH_DataAccess DA)
+        {
+            //expire solution
+            try
+            {
+                Grasshopper.Instances.ActiveCanvas.Invoke(new MethodInvoker(delegate { ExpireSolution(true); }));
+
+            }
+            catch (Exception)
+            { }
+
+            if (coordinate == "x") Rpt.X = value;
+            else if (coordinate == "y") Rpt.Y = value;
+            else Rpt.Z = value;
+
+            DA.SetData(2, Rpt);
+        }
+
 
         /// <summary>
         /// Provides an Icon for every component that will be visible in the User Interface.
@@ -158,6 +217,12 @@ namespace ARGrasshopperClient
         public override Guid ComponentGuid
         {
             get { return new Guid("b5330bec-b1a1-45a4-b9ff-4aa687e92e17"); }
+        }
+        public class MLPoint
+        {
+            public double x { get; set; }
+            public double y { get; set; }
+            public double z { get; set; }
         }
     }
 }
