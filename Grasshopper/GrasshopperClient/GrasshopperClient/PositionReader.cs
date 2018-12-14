@@ -82,17 +82,17 @@ namespace ARGrasshopperClient
             var child = client.Child("CameraPosition");
             var observable = child.AsObservable<double>();
             var subscription = observable
-                .Subscribe(c => setCamera(c.Object, c.Key, DA));
+                .Subscribe(f => setCamera(f.Object, f.Key, DA));
 
-            var child2 = client.Child("LeftHandPosition");
-            var observable2 = child2.AsObservable<double>();
-            var subscription2 = observable2
-                .Subscribe(l => setLeftHand(l.Object, l.Key, DA));
+            //var child2 = client.Child("LeftHandPosition");
+            //var observable2 = child2.AsObservable<double>();
+            //var subscription2 = observable2
+            //    .Subscribe(l => setLeftHand(l.Object, l.Key, DA));
 
-            var child3 = client.Child("RightHandPosition");
-            var observable3 = child3.AsObservable<double>();
-            var subscription3 = observable3
-                .Subscribe(r => setRightHand(r.Object, r.Key, DA));
+            //var child3 = client.Child("RightHandPosition");
+            //var observable3 = child3.AsObservable<double>();
+            //var subscription3 = observable3
+            //    .Subscribe(r => setRightHand(r.Object, r.Key, DA));
 
 
             //var camera = await client.Child("CameraPosition").OnceAsync<double>();
