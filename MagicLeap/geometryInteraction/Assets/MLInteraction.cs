@@ -50,7 +50,7 @@ public class MLInteraction : MonoBehaviour {
             {
                 if (child.transform.localPosition.y > -0.25f)
                 {
-                    GameObject.Find("Distance").GetComponent<Text>().text = "distance is " + dist;
+                    //GameObject.Find("Distance").GetComponent<Text>().text = "distance is " + dist;
                     //if(child.transform.localPosition.y - (0.25f - dist) > -0.005)
 
                     child.transform.localPosition = new Vector3(0.0f, (0.25f - dist), 0.0f);
